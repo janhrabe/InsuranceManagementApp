@@ -1,0 +1,89 @@
+@model InsuranceManagementApp.Models.InsuranceEvent
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Pojistná Událost</h2>
+
+<h4>Nový záznam</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <!-- Výběr pojistníka -->
+            <div class="form-group">
+                <label asp-for="PolicyHolderId" class="control-label"></label>
+                <select asp-for="PolicyHolderId" class="form-control" id="policyHolderDropDown">
+                    <option value="">--Vyberte Pojistníka--</option>
+                    @foreach (var holder in ViewBag.PolicyHolders as SelectList)
+                    {
+                        <option value="@holder.Value">@holder.Text</option>
+                    }
+                </select>
+                <span asp-validation-for="PolicyHolderId" class="text-danger"></span>
+            </div>
+            <!-- Výběr pojištění v závislosti na zvoleném pojistníkovi -->
+            <div class="form-group">
+                <label asp-for="InsuranceId" class="control-label"></label>
+                <select asp-for="InsuranceId" class="form-control" id="insuranceDropDown">
+                    <option value="">-- Vyberte pojištění --</option>
+                </select>
+                <span asp-validation-for="InsuranceId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EventDate" class="control-label"></label>
+                <input asp-for="EventDate" class="form-control" />
+                <span asp-validation-for="EventDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EventStatus" class="form-label">Stav Vyřízení</label>
+                <select asp-for="EventStatus" class="form-select">
+                    @foreach (var eventStatus in ViewBag.EventStatuses)
+                    {
+                        <option value="@eventStatus">@eventStatus</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Vytvořit" class="btn" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a class="btn" asp-action="Index">Zpět na výpis</a>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#policyHolderDropDown').change(function () {
+                var policyHolderId = $(this).val();
+                $('#insuranceDropDown').empty();
+                $('#insuranceDropDown').append('<option value="">-- Vyberte pojištění --</option>');
+
+                if (policyHolderId) {
+                    $.getJSON('@Url.Action("GetInsurancesByPolicyHolder", "InsuranceEvent")', { policyHolderId: policyHolderId }, function (data) {
+                        $.each(data, function (index, insurance) {
+                            $('#insuranceDropDown').append('<option value="' + insurance.id + '">' + insurance.insuranceType + '</option>');
+                        });
+                    });
+                } else {
+                    $('#insuranceDropDown').append('<option value="">-- Vyberte pojištění --</option>');
+                }
+            });
+        });
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

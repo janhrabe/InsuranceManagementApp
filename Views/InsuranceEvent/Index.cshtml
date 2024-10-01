@@ -1,0 +1,60 @@
+@model IEnumerable<InsuranceManagementApp.Models.InsuranceEvent>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Pojistná Událost</h2>
+
+<p>
+    <a class="btn" asp-action="Create">Přidat nový záznam</a>
+</p>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.PolicyHolder)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Insurance)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EventDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EventStatus)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id">@Html.DisplayFor(modelItem =>
+                    item.PolicyHolder.FullName)</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Insurance.InsuranceType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EventDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EventStatus)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Upravit</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Smazat</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
